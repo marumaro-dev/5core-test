@@ -1,4 +1,6 @@
-// Firebase v9 compat（import不要、scriptタグだけでOK）
+// config.js
+
+// Firebase コンソールからコピーした設定
 const firebaseConfig = {
     apiKey: "AIzaSyDQgoIA89QHmZACPK3B3Z2TknM9KJSBtJE",
     authDomain: "core-f52a0.firebaseapp.com",
@@ -9,8 +11,8 @@ const firebaseConfig = {
     measurementId: "G-ZZ6XPM74BL",
 };
 
-// 初期化（v9 compat）
+// ここがポイント：compat 版の初期化
 firebase.initializeApp(firebaseConfig);
 
-// Firestore を使えるようにする
+// Firestore をグローバル変数 db として使えるようにする
 const db = firebase.firestore();

@@ -1,23 +1,33 @@
 <!DOCTYPE html>
 <html lang="ja">
     <head>
+        <link rel="stylesheet" href="style.css" />
+
         <meta charset="UTF-8" />
         <title>性格診断テスト（データ収集用）</title>
     </head>
     <body>
-        <h1>性格診断テスト（試験版）</h1>
+        <div class="main-wrapper">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">5コア診断テスト（試験版）</h1>
+                    <p class="card-subtitle">
+                        直感で答えてください。全50問・所要時間5〜10分です。
+                    </p>
+                </div>
 
-        <form id="quiz-form">
-            <div id="questions-container"></div>
+                <form id="quiz-form">
+                    <div id="questions-container"></div>
+                    <button type="submit">結果を見る</button>
+                </form>
 
-            <button type="submit">結果を見る</button>
-        </form>
-
-        <div id="result"></div>
+                <div id="result"></div>
+            </div>
+        </div>
 
         <!-- Firebase SDK & app.js 読み込み -->
-        <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore-compat.js"></script>
         <script src="config.js"></script>
         <!-- Firebase設定 -->
         <script src="./config.js"></script>

@@ -33,22 +33,38 @@ const container = document.getElementById("questions-container");
 
 shuffled.forEach((q, index) => {
     const div = document.createElement("div");
+
+    // ← ここから追加
+    div.classList.add("question");
     div.innerHTML = `
-    <p>${index + 1}. ${q.text}</p>
-    <label><input type="radio" name="q${
-        q.id
-    }" value="-2"> まったくそう思わない</label><br>
-    <label><input type="radio" name="q${
-        q.id
-    }" value="-1"> あまりそう思わない</label><br>
-    <label><input type="radio" name="q${
-        q.id
-    }" value="0"> どちらともいえない</label><br>
-    <label><input type="radio" name="q${q.id}" value="1"> そう思う</label><br>
-    <label><input type="radio" name="q${
-        q.id
-    }" value="2"> とてもそう思う</label><br>
+    <p class="question-text">
+      <span class="question-number">${index + 1}.</span>${q.text}
+    </p>
+    <div class="options">
+      <label class="option-label">
+        <input type="radio" name="q${q.id}" value="-2">
+        まったくそう思わない
+      </label>
+      <label class="option-label">
+        <input type="radio" name="q${q.id}" value="-1">
+        あまりそう思わない
+      </label>
+      <label class="option-label">
+        <input type="radio" name="q${q.id}" value="0">
+        どちらともいえない
+      </label>
+      <label class="option-label">
+        <input type="radio" name="q${q.id}" value="1">
+        そう思う
+      </label>
+      <label class="option-label">
+        <input type="radio" name="q${q.id}" value="2">
+        とてもそう思う
+      </label>
+    </div>
   `;
+    // ← ここまでを div.innerHTML にセット
+
     container.appendChild(div);
 });
 
