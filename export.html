@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <title>5core データエクスポート</title>
+    </head>
+    <body>
+        <h1>5core データエクスポート</h1>
+        <button id="export-btn">CSV をダウンロード</button>
+
+        <!-- Firebase SDK（index.html と同じでOK） -->
+        <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore-compat.js"></script>
+        <script src="config.js"></script>
+
+        <script>
+            const btn = document.getElementById("export-btn");
+
+            btn.addEventListener("click", async () => {
+                btn.disabled = true;
+                btn.textContent = "エクスポート中...";
+
+                try {
+                    const snapshot = await db
+                        .collection("diagnosisAnswers")
+                        .orderBy("createdAt")
+                        .get();
+
+                    const rows = [];
+
+                    // ヘッダ行
+                    rows.push([
+                        "id",
+                        "createdAt",
+                        "raw_E",
+                        "raw_O",
+                        "raw_C",
+                        "raw_A",
+                        "raw_N",
+                        "big5_E",
+                        "big5_O",
+                        "big5_C",
+                        "big5_A",
+                        "big5_N",
+                        "z_E",
+                        "z_O",
+                        "z_C",
+                        "z_A",
+                        "z_N",
+                        "type5",
+                        // 回答1〜50
+                        ...Array.from({ length: 50 }, (_, i) => `q${i + 1}`),
+                    ]);
+
+                    snapshot.forEach((doc) => {
+                        const d = doc.data();
+                        const raw = d.raw || {};
+                        const big5 = d.big5 || {};
+                        const z = d.z || {};
+                        const answers = d.answers || {};
+
+                        const row = [
+                            doc.id,
+                            d.createdAt
+                                ? d.createdAt.toDate().toISOString()
+                                : "",
+                            raw.E ?? "",
+                            raw.O ?? "",
+                            raw.C ?? "",
+                            raw.A ?? "",
+                            raw.N ?? "",
+                            big5.E ?? "",
+                            big5.O ?? "",
+                            big5.C ?? "",
+                            big5.A ?? "",
+                            big5.N ?? "",
+                            z.E ?? "",
+                            z.O ?? "",
+                            z.C ?? "",
+                            z.A ?? "",
+                            z.N ?? "",
+                            d.type5 ?? "",
+                            ...Array.from(
+                                { length: 50 },
+                                (_, i) => answers[i + 1] ?? ""
+                            ),
+                        ];
+
+                        rows.push(row);
+                    });
+
+                    // CSV文字列に変換
+                    const csv = rows
+                        .map((cols) =>
+                            cols
+                                .map((c) => {
+                                    const s = String(c ?? "");
+                                    // カンマや改行・ダブルクオートが入る場合はダブルクオートで囲む
+                                    if (/[",\n]/.test(s)) {
+                                        return `"${s.replace(/"/g, '""')}"`;
+                                    }
+                                    return s;
+                                })
+                                .join(",")
+                        )
+                        .join("\n");
+
+                    // ダウンロード用リンク作成
+                    const blob = new Blob([csv], {
+                        type: "text/csv;charset=utf-8;",
+                    });
+                    const url = URL.createObjectURL(blob);
+
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "5core_answers.csv";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    btn.textContent = "CSV をダウンロード";
+                    btn.disabled = false;
+                } catch (e) {
+                    console.error(e);
+                    alert("エクスポート中にエラーが発生しました");
+                    btn.textContent = "CSV をダウンロード";
+                    btn.disabled = false;
+                }
+            });
+        </script>
+    </body>
+</html>
