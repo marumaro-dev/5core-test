@@ -6,6 +6,8 @@ async function saveToFirestore(payload) {
         z: payload.z, // zスコア
         type5: payload.type5, // ENFPU など
         answers: payload.answers, // 問題ごとの回答（-2〜+2）
+        nickname: payload.nickname ?? null,
+        respondentId: payload.respondentId ?? null,
         version: "v1.0", // 質問票のバージョン管理用に任意で
     };
 
@@ -19,6 +21,10 @@ async function saveToFirestore(payload) {
         );
     }
 }
+
+// URLパラメータから user を取得
+const params = new URLSearchParams(location.search);
+const respondentId = params.get("user") || null;
 
 function shuffle(array) {
     return array
@@ -82,6 +88,10 @@ const THRESH = {
 document.getElementById("quiz-form").addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // ★ ニックネーム取得（ここを追加）
+    const nicknameInput = document.getElementById("nickname");
+    const nickname = nicknameInput ? nicknameInput.value.trim() : null;
+
     // 1) 因子ごとの raw スコア集計
     const raw = { E: 0, O: 0, C: 0, A: 0, N: 0 };
     const answers = {};
@@ -135,6 +145,14 @@ document.getElementById("quiz-form").addEventListener("submit", async (e) => {
     <p>タイプ: <strong>${type5}</strong></p>
   `;
 
-    // 6) Firestoreに保存（次のステップで解説）
-    await saveToFirestore({ raw, big5, z, type5, answers });
+    // 6) Firestoreに保存
+    await saveToFirestore({
+        raw,
+        big5,
+        z,
+        type5,
+        answers,
+        nickname,
+        respondentId,
+    });
 });
